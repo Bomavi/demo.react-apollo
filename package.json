@@ -1,0 +1,55 @@
+{
+  "name": "react-apollo-demo",
+  "version": "1.0.0",
+  "author": "Maksym Bozhenov <max.bozh.n1mbo@gmail.com>",
+  "scripts": {
+    "start": "BROWSER=none PORT=80 react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.7.1",
+    "axios": "^0.19.0",
+    "classnames": "^2.2.6",
+    "date-fns": "^2.8.1",
+    "framer-motion": "^1.6.17",
+    "history": "^4.10.1",
+    "prop-types": "^15.7.2",
+    "query-string": "^6.9.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-redux": "^7.1.3",
+    "react-router": "^5.1.2",
+    "redux": "^4.0.4",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0",
+    "reselect": "^4.0.0"
+  },
+  "devDependencies": {
+    "axios-mock-adapter": "^1.17.0",
+    "enzyme": "^3.10.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-config-react-app": "^5.0.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-react-hooks": "^2.3.0",
+    "prettier": "^1.19.1",
+    "react-scripts": "3.2.0",
+    "redux-mock-store": "^1.5.3"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
