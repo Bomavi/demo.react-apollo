@@ -1,9 +1,14 @@
 overwrite: true
 schema: "http://localhost/graphql"
-documents: "graphql/**/*.graphql"
+documents: "graphql/**/*.ts"
 generates:
   generated/graphql.tsx:
     plugins:
       - "typescript"
       - "typescript-operations"
       - "typescript-react-apollo"
+    config:
+      withComponent: false
+      withHOC: false
+      withHooks: true
+      addDocBlocks: false
