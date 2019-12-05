@@ -1,29 +1,27 @@
 /* npm imports: common */
 import React, { useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+
+/* root imports: graphql */
+import { useCreateTaskMutation } from 'generated/graphql';
 
 /* root imports: view components */
 import { CustomInput } from 'views/elements';
 
-/* root imports: common */
-import { createTask } from 'actions/tasks';
-
 /* local imports: common */
 // import { useStyles } from './styles';
 
-const AddTask = () => {
+const AddTask: React.FC = () => {
 	// const classes = useStyles();
-	const dispatch = useDispatch();
 
-	const inProgress = useSelector(state => state.tasks.inProgress);
+	const [createTask, { loading }] = useCreateTaskMutation();
 
 	const actionHandler = useCallback(
 		value => {
 			if (value) {
-				dispatch(createTask({ description: value, completed: false }));
+				createTask({ variables: { description: value, completed: false } });
 			}
 		},
-		[dispatch]
+		[createTask]
 	);
 
 	return (
@@ -33,7 +31,7 @@ const AddTask = () => {
 				svgSize: 'md',
 				title: 'Add',
 			}}
-			isFetching={inProgress}
+			isFetching={loading}
 			placeholder="Type task description..."
 			onClick={actionHandler}
 		/>
