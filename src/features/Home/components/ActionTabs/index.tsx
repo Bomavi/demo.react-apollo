@@ -12,14 +12,17 @@ import { AddTask, Search } from 'features/Home/containers';
 /* local imports: common */
 import { useStyles } from './styles';
 
-const ActionTabs = () => {
+const ActionTabs: React.FC = () => {
 	const classes = useStyles();
 
 	const [tabIndex, setTabIndex] = React.useState(0);
 
-	const tabClickHandler = React.useCallback((e, value) => {
-		setTabIndex(value);
-	}, []);
+	const tabClickHandler = React.useCallback(
+		(_e: React.ChangeEvent<{}>, value: number) => {
+			setTabIndex(value);
+		},
+		[]
+	);
 
 	return (
 		<Paper className={classes.root}>
