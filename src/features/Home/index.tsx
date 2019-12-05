@@ -8,7 +8,7 @@ import Container from '@material-ui/core/Container';
 import { TaskList } from './containers';
 import { ActionTabs } from './components';
 
-const Home = () => (
+const Home: React.FC = () => (
 	<Container maxWidth="md">
 		<ActionTabs />
 		<TaskList />
