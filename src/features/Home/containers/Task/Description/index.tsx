@@ -1,6 +1,5 @@
 /* npm imports: common */
 import React from 'react';
-import PropTypes from 'prop-types';
 import cx from 'classnames';
 
 /* npm imports: material-ui/core */
@@ -9,7 +8,13 @@ import Typography from '@material-ui/core/Typography';
 /* local imports: common */
 import { useStyles } from './styles';
 
-const Description = React.memo(({ children, completed }) => {
+export interface DescriptionProps {
+	completed: boolean;
+}
+
+const Description: React.FC<DescriptionProps> = React.memo(props => {
+	const { children, completed } = props;
+
 	const classes = useStyles();
 
 	return (
@@ -23,9 +28,5 @@ const Description = React.memo(({ children, completed }) => {
 		</Typography>
 	);
 });
-
-Description.propTypes = {
-	completed: PropTypes.bool.isRequired,
-};
 
 export { Description };
