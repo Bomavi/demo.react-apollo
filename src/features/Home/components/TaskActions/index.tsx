@@ -1,6 +1,5 @@
 /* npm imports: common */
 import React from 'react';
-import PropTypes from 'prop-types';
 import cx from 'classnames';
 
 /* npm imports: material-ui/core */
@@ -13,7 +12,16 @@ import { Icon } from 'views/elements';
 /* local imports: common */
 import { useStyles } from './styles';
 
-const TaskActions = React.memo(({ children, disabled, onDelete, onEdit, isFetching }) => {
+export interface TaskActionsProps {
+	disabled?: boolean;
+	isFetching?: boolean;
+	onDelete?: () => void;
+	onEdit: () => void;
+}
+
+const TaskActions: React.FC<TaskActionsProps> = React.memo(props => {
+	const { children, disabled, onDelete, onEdit, isFetching = false } = props;
+
 	const classes = useStyles();
 
 	if (isFetching) {
@@ -53,16 +61,5 @@ const TaskActions = React.memo(({ children, disabled, onDelete, onEdit, isFetchi
 		</div>
 	);
 });
-
-TaskActions.propTypes = {
-	disabled: PropTypes.bool,
-	onDelete: PropTypes.func,
-	onEdit: PropTypes.func.isRequired,
-	isFetching: PropTypes.bool,
-};
-
-TaskActions.defaultProps = {
-	isFetching: false,
-};
 
 export { TaskActions };
