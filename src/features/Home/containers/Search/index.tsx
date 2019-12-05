@@ -1,27 +1,28 @@
 /* npm imports: common */
-import React, { useCallback, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useCallback, useEffect, useRef } from 'react';
+
+/* root imports: graphql */
+import { useSearchTasksLazyQuery } from 'generated/graphql';
 
 /* root imports: view components */
 import { CustomInput } from 'views/elements';
 
 /* root imports: common */
 import { debounce, debounceTiming } from 'utils/helpers';
-import { searchTasks, fetchTasks } from 'actions/tasks';
 
 /* local imports: common */
 // import { useStyles } from './styles';
 
-const Search = () => {
+const Search: React.FC = () => {
 	// const classes = useStyles();
-	const dispatch = useDispatch();
-	const isInitialized = React.useRef(false);
-	const prevSearch = React.useRef('');
 
-	const isFetching = useSelector(state => state.tasks.isFetching);
+	const isInitialized = useRef(false);
+	const prevSearch = useRef('');
+
+	const [searchTasks, { loading }] = useSearchTasksLazyQuery();
 
 	const changeHandler = useCallback(
-		debounce(value => {
+		debounce((value: string) => {
 			if (!isInitialized.current && value === '') {
 				isInitialized.current = true;
 			} else if (value !== prevSearch.current) {
@@ -33,11 +34,10 @@ const Search = () => {
 	);
 
 	const searchHandler = useCallback(
-		payload => {
-			dispatch(searchTasks(payload));
-			dispatch(fetchTasks());
+		q => {
+			searchTasks({ variables: { q } });
 		},
-		[dispatch]
+		[searchTasks]
 	);
 
 	useEffect(() => {
@@ -52,7 +52,7 @@ const Search = () => {
 				name: 'magnify',
 				svgSize: 'md',
 			}}
-			isFetching={isFetching}
+			isFetching={loading}
 			placeholder="Type to search..."
 			onChange={changeHandler}
 		/>
