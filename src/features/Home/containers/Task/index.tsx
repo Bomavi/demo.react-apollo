@@ -1,18 +1,19 @@
 /* npm imports: common */
 import React, { useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
 import cx from 'classnames';
 
 /* npm imports: material-ui/core */
 import Divider from '@material-ui/core/Divider';
 
+/* root imports: graphql */
+import {
+	Task as TaskEntity,
+	useUpdateTaskMutation,
+	useDeleteTaskMutation,
+} from 'generated/graphql';
+
 /* root imports: view components */
 import { TaskCheckbox, TaskActions } from 'features/Home/components';
-
-/* root imports: common */
-import { updateTask, deleteTask } from 'actions/tasks';
-import { TaskShape } from 'utils/shapes';
 
 /* local imports: common */
 import { Description } from './Description';
@@ -20,12 +21,21 @@ import { EditInput } from './EditInput';
 import { Backdrop } from './Backdrop';
 import { useStyles } from './styles';
 
-const Task = React.memo(({ task, isLastChild }) => {
+interface TaskProps {
+	task: TaskEntity;
+	isLastChild: boolean;
+}
+
+const Task: React.FC<TaskProps> = React.memo(props => {
+	const { task, isLastChild = false } = props;
+
 	const classes = useStyles();
-	const dispatch = useDispatch();
 
 	const [isHovered, setIsHovered] = useState(false);
 	const [isEditable, setIsEditable] = useState(false);
+
+	const [updateTask, { loading: updateInProgress }] = useUpdateTaskMutation();
+	const [deleteTask, { loading: deleteInProgress }] = useDeleteTaskMutation();
 
 	const mouseEnterHandler = () => {
 		setIsHovered(true);
@@ -41,20 +51,20 @@ const Task = React.memo(({ task, isLastChild }) => {
 	};
 
 	const completeHandler = useCallback(() => {
-		dispatch(updateTask(task._id, { ...task, completed: !task.completed }));
+		updateTask({ variables: { ...task, completed: !task.completed } });
 		mouseLeaveHandler();
-	}, [dispatch, task]);
+	}, [task, updateTask]);
 
 	const saveHandler = useCallback(
 		value => {
-			dispatch(updateTask(task._id, { ...task, description: value }));
+			updateTask({ variables: { ...task, description: value } });
 		},
-		[dispatch, task]
+		[task, updateTask]
 	);
 
 	const deleteHandler = useCallback(() => {
-		dispatch(deleteTask(task._id));
-	}, [dispatch, task._id]);
+		deleteTask({ variables: { id: task.id } });
+	}, [deleteTask, task.id]);
 
 	return (
 		<div
@@ -64,18 +74,16 @@ const Task = React.memo(({ task, isLastChild }) => {
 		>
 			<TaskCheckbox
 				value={task.completed}
-				isFetching={task.updateInProgress}
+				isFetching={updateInProgress}
 				onChange={completeHandler}
 			/>
 			<Divider className={classes.divider} />
 			<Description completed={task.completed}>{task.description}</Description>
-			{isHovered && !task.deleteInProgress && (
-				<Divider className={classes.divider} />
-			)}
-			{(isHovered || task.deleteInProgress) && (
+			{isHovered && !deleteInProgress && <Divider className={classes.divider} />}
+			{(isHovered || deleteInProgress) && (
 				<TaskActions
 					onEdit={editHandler}
-					isFetching={task.deleteInProgress}
+					isFetching={deleteInProgress}
 					onDelete={deleteHandler}
 				/>
 			)}
@@ -83,7 +91,7 @@ const Task = React.memo(({ task, isLastChild }) => {
 			{isEditable && (
 				<EditInput
 					autoFocus
-					isFetching={task.updateInProgress}
+					isFetching={updateInProgress}
 					defaultValue={task.description}
 					onClick={saveHandler}
 					onCancel={editHandler}
@@ -92,14 +100,5 @@ const Task = React.memo(({ task, isLastChild }) => {
 		</div>
 	);
 });
-
-Task.propTypes = {
-	task: PropTypes.shape(TaskShape).isRequired,
-	isLastChild: PropTypes.bool.isRequired,
-};
-
-Task.defaultProps = {
-	isLastChild: false,
-};
 
 export { Task };
