@@ -1,6 +1,5 @@
 /* npm imports: common */
 import React from 'react';
-import PropTypes from 'prop-types';
 
 /* npm imports: material-ui/core */
 import ButtonBase from '@material-ui/core/ButtonBase';
@@ -9,7 +8,14 @@ import Fade from '@material-ui/core/Fade';
 /* local imports: common */
 import { useStyles } from './styles';
 
-const Backdrop = React.memo(({ fadeIn, onClick }) => {
+export interface BackdropProps {
+	fadeIn: boolean;
+	onClick?: () => void;
+}
+
+const Backdrop: React.FC<BackdropProps> = React.memo(props => {
+	const { fadeIn, onClick } = props;
+
 	const classes = useStyles();
 
 	return (
@@ -18,10 +24,5 @@ const Backdrop = React.memo(({ fadeIn, onClick }) => {
 		</Fade>
 	);
 });
-
-Backdrop.propTypes = {
-	fadeIn: PropTypes.bool.isRequired,
-	onClick: PropTypes.func,
-};
 
 export { Backdrop };
