@@ -1,40 +1,42 @@
 /* npm imports: common */
-import React, { useCallback, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useCallback } from 'react';
 import { motion } from 'framer-motion';
 
 /* npm imports: material-ui/core */
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
+/* root imports: graphql */
+import { useSearchTasksQuery } from 'generated/graphql';
+
 /* root imports: view components */
 import { Task } from 'features/Home/containers';
 import { SortButton } from 'features/Home/components';
 
 /* root imports: common */
-import { fetchTasks, sortTasks } from 'actions/tasks';
-import { getSortedTasks, getTasksIsEmpty, getTasksLenth } from 'selectors';
+import { useAppContext } from 'context';
 
 /* local imports: common */
 import { useStyles } from './styles';
 
-const TaskList = () => {
+const TaskList: React.FC = () => {
 	const classes = useStyles();
-	const dispatch = useDispatch();
 
-	const sortKey = useSelector(state => state.tasks.sort);
-	const tasks = useSelector(state => getSortedTasks(state));
-	const isEmpty = useSelector(state => getTasksIsEmpty(state));
-	const tasksLength = useSelector(state => getTasksLenth(state));
+	const [{ tasksSortOrder }, setContext] = useAppContext();
+
+	const { data: searchTasksData } = useSearchTasksQuery();
+	const { searchTasks: tasks } = searchTasksData!;
+
+	const tasksLength = tasks.length;
+	const isEmpty = tasksLength === 0;
 
 	const sortTasksHandler = useCallback(() => {
-		if (sortKey === 'asc') dispatch(sortTasks('desc'));
-		if (sortKey === 'desc') dispatch(sortTasks('asc'));
-	}, [dispatch, sortKey]);
-
-	useEffect(() => {
-		dispatch(fetchTasks());
-	}, [dispatch]);
+		if (tasksSortOrder === 'asc') {
+			setContext(ctx => ({ ...ctx, tasksSortOrder: 'desc' }));
+		} else if (tasksSortOrder === 'desc') {
+			setContext(ctx => ({ ...ctx, tasksSortOrder: 'asc' }));
+		}
+	}, [tasksSortOrder, setContext]);
 
 	return (
 		<Paper className={classes.root}>
@@ -46,14 +48,14 @@ const TaskList = () => {
 					{!isEmpty && `${tasksLength}`}
 				</Typography>
 				<SortButton
-					sortKey={sortKey}
+					sortKey={tasksSortOrder}
 					disabled={isEmpty}
 					onClick={sortTasksHandler}
 				/>
 			</div>
 			{!isEmpty
 				? tasks.map((task, i) => (
-						<motion.div key={task._id} positionTransition>
+						<motion.div key={task.id} positionTransition>
 							<Task task={task} isLastChild={tasksLength === i + 1} />
 						</motion.div>
 				  ))
