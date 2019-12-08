@@ -2,6 +2,9 @@ export const IS_DEV = process.env.NODE_ENV === 'development';
 
 export const HOST = process.env.REACT_APP_DEV_HOST || '';
 
+export const GRAPHQL_PATH = process.env.REACT_APP_GRAPHQL_PATH;
+export const GRAPHQL_URL = `${HOST}${GRAPHQL_PATH}`;
+
 export const SERVICES_PATH = process.env.REACT_APP_SERVICES_PATH;
 export const SERVICES_URL = `${HOST}${SERVICES_PATH}`;
 
