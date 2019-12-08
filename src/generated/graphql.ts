@@ -16,15 +16,14 @@ export type Scalars = {
 
 export type Mutation = {
    __typename?: 'Mutation',
-  authenticate: User,
   login: User,
   logout: Scalars['String'],
   register: User,
   createTask: Task,
-  deleteTask: Scalars['ID'],
+  deleteTask: Scalars['Int'],
   updateTask: Task,
   createUser: User,
-  deleteUser: Scalars['ID'],
+  deleteUser: Scalars['Int'],
   updateUser: User,
 };
 
@@ -49,13 +48,13 @@ export type MutationCreateTaskArgs = {
 
 
 export type MutationDeleteTaskArgs = {
-  id: Scalars['ID']
+  id: Scalars['Int']
 };
 
 
 export type MutationUpdateTaskArgs = {
-  id: Scalars['ID'],
-  description: Scalars['String'],
+  id: Scalars['Int'],
+  description?: Maybe<Scalars['String']>,
   completed?: Maybe<Scalars['Boolean']>
 };
 
@@ -68,28 +67,30 @@ export type MutationCreateUserArgs = {
 
 
 export type MutationDeleteUserArgs = {
-  id: Scalars['ID']
+  id: Scalars['Int']
 };
 
 
 export type MutationUpdateUserArgs = {
-  id: Scalars['ID'],
+  id: Scalars['Int'],
   username?: Maybe<Scalars['String']>,
   password?: Maybe<Scalars['String']>,
-  theme?: Maybe<Scalars['String']>
+  theme?: Maybe<Theme>
 };
 
 export type Query = {
    __typename?: 'Query',
+  authenticate: User,
   findTaskById: Task,
   searchTasks: Array<Task>,
+  currentUser?: Maybe<User>,
   findUserById: User,
   searchUsers: Array<User>,
 };
 
 
 export type QueryFindTaskByIdArgs = {
-  id: Scalars['ID']
+  id: Scalars['Int']
 };
 
 
@@ -99,7 +100,7 @@ export type QuerySearchTasksArgs = {
 
 
 export type QueryFindUserByIdArgs = {
-  id: Scalars['ID']
+  id: Scalars['Int']
 };
 
 
@@ -109,32 +110,27 @@ export type QuerySearchUsersArgs = {
 
 export type Task = {
    __typename?: 'Task',
-  id: Scalars['ID'],
+  id: Scalars['Int'],
   description: Scalars['String'],
   completed: Scalars['Boolean'],
   createdAt: Scalars['DateTime'],
   updatedAt: Scalars['DateTime'],
 };
 
+/** Only available theme options */
+export enum Theme {
+  Light = 'light',
+  Dark = 'dark'
+}
+
 export type User = {
    __typename?: 'User',
-  id: Scalars['ID'],
+  id: Scalars['Int'],
   username: Scalars['String'],
-  theme?: Maybe<Scalars['String']>,
+  theme: Theme,
   createdAt: Scalars['DateTime'],
   updatedAt: Scalars['DateTime'],
 };
-
-export type AuthenticateMutationVariables = {};
-
-
-export type AuthenticateMutation = (
-  { __typename?: 'Mutation' }
-  & { authenticate: (
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'theme' | 'createdAt' | 'updatedAt'>
-  ) }
-);
 
 export type LoginMutationVariables = {
   username?: Maybe<Scalars['String']>,
@@ -173,6 +169,17 @@ export type RegisterMutation = (
   ) }
 );
 
+export type AuthenticateQueryVariables = {};
+
+
+export type AuthenticateQuery = (
+  { __typename?: 'Query' }
+  & { authenticate: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'theme' | 'createdAt' | 'updatedAt'>
+  ) }
+);
+
 export type CreateTaskMutationVariables = {
   description: Scalars['String'],
   completed?: Maybe<Scalars['Boolean']>
@@ -188,7 +195,7 @@ export type CreateTaskMutation = (
 );
 
 export type DeleteTaskMutationVariables = {
-  id: Scalars['ID']
+  id: Scalars['Int']
 };
 
 
@@ -198,8 +205,8 @@ export type DeleteTaskMutation = (
 );
 
 export type UpdateTaskMutationVariables = {
-  id: Scalars['ID'],
-  description: Scalars['String'],
+  id: Scalars['Int'],
+  description?: Maybe<Scalars['String']>,
   completed?: Maybe<Scalars['Boolean']>
 };
 
@@ -213,7 +220,7 @@ export type UpdateTaskMutation = (
 );
 
 export type FindTaskByIdQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['Int']
 };
 
 
@@ -254,7 +261,7 @@ export type CreateUserMutation = (
 );
 
 export type DeleteUserMutationVariables = {
-  id: Scalars['ID']
+  id: Scalars['Int']
 };
 
 
@@ -264,10 +271,10 @@ export type DeleteUserMutation = (
 );
 
 export type UpdateUserMutationVariables = {
-  id: Scalars['ID'],
+  id: Scalars['Int'],
   username?: Maybe<Scalars['String']>,
-  password: Scalars['String'],
-  theme?: Maybe<Scalars['String']>
+  password?: Maybe<Scalars['String']>,
+  theme?: Maybe<Theme>
 };
 
 
@@ -279,8 +286,19 @@ export type UpdateUserMutation = (
   ) }
 );
 
+export type CurrentUserQueryVariables = {};
+
+
+export type CurrentUserQuery = (
+  { __typename?: 'Query' }
+  & { currentUser: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'theme' | 'createdAt' | 'updatedAt'>
+  )> }
+);
+
 export type FindUserByIdQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['Int']
 };
 
 
@@ -306,24 +324,6 @@ export type SearchUsersQuery = (
 );
 
 
-export const AuthenticateDocument = gql`
-    mutation Authenticate {
-  authenticate {
-    id
-    username
-    theme
-    createdAt
-    updatedAt
-  }
-}
-    `;
-export type AuthenticateMutationFn = ApolloReactCommon.MutationFunction<AuthenticateMutation, AuthenticateMutationVariables>;
-export function useAuthenticateMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<AuthenticateMutation, AuthenticateMutationVariables>) {
-        return ApolloReactHooks.useMutation<AuthenticateMutation, AuthenticateMutationVariables>(AuthenticateDocument, baseOptions);
-      }
-export type AuthenticateMutationHookResult = ReturnType<typeof useAuthenticateMutation>;
-export type AuthenticateMutationResult = ApolloReactCommon.MutationResult<AuthenticateMutation>;
-export type AuthenticateMutationOptions = ApolloReactCommon.BaseMutationOptions<AuthenticateMutation, AuthenticateMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($username: String, $password: String, $isGuest: Boolean) {
   login(username: $username, password: $password, isGuest: $isGuest) {
@@ -372,6 +372,26 @@ export function useRegisterMutation(baseOptions?: ApolloReactHooks.MutationHookO
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = ApolloReactCommon.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = ApolloReactCommon.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const AuthenticateDocument = gql`
+    query Authenticate {
+  authenticate {
+    id
+    username
+    theme
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export function useAuthenticateQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AuthenticateQuery, AuthenticateQueryVariables>) {
+        return ApolloReactHooks.useQuery<AuthenticateQuery, AuthenticateQueryVariables>(AuthenticateDocument, baseOptions);
+      }
+export function useAuthenticateLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AuthenticateQuery, AuthenticateQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<AuthenticateQuery, AuthenticateQueryVariables>(AuthenticateDocument, baseOptions);
+        }
+export type AuthenticateQueryHookResult = ReturnType<typeof useAuthenticateQuery>;
+export type AuthenticateLazyQueryHookResult = ReturnType<typeof useAuthenticateLazyQuery>;
+export type AuthenticateQueryResult = ApolloReactCommon.QueryResult<AuthenticateQuery, AuthenticateQueryVariables>;
 export const CreateTaskDocument = gql`
     mutation CreateTask($description: String!, $completed: Boolean) {
   createTask(description: $description, completed: $completed) {
@@ -391,7 +411,7 @@ export type CreateTaskMutationHookResult = ReturnType<typeof useCreateTaskMutati
 export type CreateTaskMutationResult = ApolloReactCommon.MutationResult<CreateTaskMutation>;
 export type CreateTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateTaskMutation, CreateTaskMutationVariables>;
 export const DeleteTaskDocument = gql`
-    mutation DeleteTask($id: ID!) {
+    mutation DeleteTask($id: Int!) {
   deleteTask(id: $id)
 }
     `;
@@ -403,7 +423,7 @@ export type DeleteTaskMutationHookResult = ReturnType<typeof useDeleteTaskMutati
 export type DeleteTaskMutationResult = ApolloReactCommon.MutationResult<DeleteTaskMutation>;
 export type DeleteTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<DeleteTaskMutation, DeleteTaskMutationVariables>;
 export const UpdateTaskDocument = gql`
-    mutation UpdateTask($id: ID!, $description: String!, $completed: Boolean) {
+    mutation UpdateTask($id: Int!, $description: String, $completed: Boolean) {
   updateTask(id: $id, description: $description, completed: $completed) {
     id
     description
@@ -421,7 +441,7 @@ export type UpdateTaskMutationHookResult = ReturnType<typeof useUpdateTaskMutati
 export type UpdateTaskMutationResult = ApolloReactCommon.MutationResult<UpdateTaskMutation>;
 export type UpdateTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateTaskMutation, UpdateTaskMutationVariables>;
 export const FindTaskByIdDocument = gql`
-    query FindTaskById($id: ID!) {
+    query FindTaskById($id: Int!) {
   findTaskById(id: $id) {
     id
     description
@@ -479,7 +499,7 @@ export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutati
 export type CreateUserMutationResult = ApolloReactCommon.MutationResult<CreateUserMutation>;
 export type CreateUserMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
 export const DeleteUserDocument = gql`
-    mutation DeleteUser($id: ID!) {
+    mutation DeleteUser($id: Int!) {
   deleteUser(id: $id)
 }
     `;
@@ -491,7 +511,7 @@ export type DeleteUserMutationHookResult = ReturnType<typeof useDeleteUserMutati
 export type DeleteUserMutationResult = ApolloReactCommon.MutationResult<DeleteUserMutation>;
 export type DeleteUserMutationOptions = ApolloReactCommon.BaseMutationOptions<DeleteUserMutation, DeleteUserMutationVariables>;
 export const UpdateUserDocument = gql`
-    mutation UpdateUser($id: ID!, $username: String, $password: String!, $theme: String) {
+    mutation UpdateUser($id: Int!, $username: String, $password: String, $theme: Theme) {
   updateUser(id: $id, username: $username, password: $password, theme: $theme) {
     id
     username
@@ -508,8 +528,28 @@ export function useUpdateUserMutation(baseOptions?: ApolloReactHooks.MutationHoo
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = ApolloReactCommon.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const CurrentUserDocument = gql`
+    query CurrentUser {
+  currentUser {
+    id
+    username
+    theme
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export function useCurrentUserQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<CurrentUserQuery, CurrentUserQueryVariables>) {
+        return ApolloReactHooks.useQuery<CurrentUserQuery, CurrentUserQueryVariables>(CurrentUserDocument, baseOptions);
+      }
+export function useCurrentUserLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CurrentUserQuery, CurrentUserQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<CurrentUserQuery, CurrentUserQueryVariables>(CurrentUserDocument, baseOptions);
+        }
+export type CurrentUserQueryHookResult = ReturnType<typeof useCurrentUserQuery>;
+export type CurrentUserLazyQueryHookResult = ReturnType<typeof useCurrentUserLazyQuery>;
+export type CurrentUserQueryResult = ApolloReactCommon.QueryResult<CurrentUserQuery, CurrentUserQueryVariables>;
 export const FindUserByIdDocument = gql`
-    query FindUserById($id: ID!) {
+    query FindUserById($id: Int!) {
   findUserById(id: $id) {
     id
     username
