@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
-export const findTaskByIdMutation = gql`
-	query FindTaskById($id: ID!) {
+export const findTaskByIdQuery = gql`
+	query FindTaskById($id: Int!) {
 		findTaskById(id: $id) {
 			id
 			description

@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-export const authenticateMutation = gql`
-	mutation Authenticate {
-		authenticate {
+export const currentUserQuery = gql`
+	query CurrentUser {
+		currentUser {
 			id
 			username
 			theme

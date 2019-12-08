@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-export const searchUsersQuery = gql`
-	query SearchUsers($q: String) {
-		searchUsers(q: $q) {
+export const authenticateQuery = gql`
+	query Authenticate {
+		authenticate {
 			id
 			username
 			theme

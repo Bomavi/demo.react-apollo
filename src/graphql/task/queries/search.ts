@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-export const searchTasksMutation = gql`
+export const searchTasksQuery = gql`
 	query SearchTasks($q: String) {
 		searchTasks(q: $q) {
 			id

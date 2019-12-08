@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
-export const findUserByIdMutation = gql`
-	query FindUserById($id: ID!) {
+export const findUserByIdQuery = gql`
+	query FindUserById($id: Int!) {
 		findUserById(id: $id) {
 			id
 			username
