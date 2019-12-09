@@ -1,9 +1,11 @@
 /* npm imports: material-ui/core */
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 
-export const useStyles = makeStyles(theme =>
+import { LoginButtonProps } from './index';
+
+export const useStyles = makeStyles((theme: Theme) =>
 	createStyles({
-		button: p => ({
+		button: (p: LoginButtonProps) => ({
 			height: 48,
 			padding: '0 30px',
 			marginTop: p.marginTop,
