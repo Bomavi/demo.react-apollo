@@ -10,10 +10,15 @@ import {
 	Task as TaskEntity,
 	useUpdateTaskMutation,
 	useDeleteTaskMutation,
+	SearchTasksDocument,
+	SearchTasksQuery,
 } from 'generated/graphql';
 
 /* root imports: view components */
 import { TaskCheckbox, TaskActions } from 'features/Home/components';
+
+/* root imports: common */
+import { useStore } from 'context';
 
 /* local imports: common */
 import { Description } from './Description';
@@ -31,11 +36,62 @@ const Task: React.FC<TaskProps> = React.memo(props => {
 
 	const classes = useStyles();
 
+	const [{ tasksSortOrder }] = useStore();
+
 	const [isHovered, setIsHovered] = useState(false);
 	const [isEditable, setIsEditable] = useState(false);
 
-	const [updateTask, { loading: updateInProgress }] = useUpdateTaskMutation();
-	const [deleteTask, { loading: deleteInProgress }] = useDeleteTaskMutation();
+	const [updateTask, { loading: updateInProgress }] = useUpdateTaskMutation({
+		update: (cache, { data: createTaskData }) => {
+			const variables = {
+				sortBy: tasksSortOrder,
+			};
+
+			const { searchTasks } = cache.readQuery<SearchTasksQuery>({
+				query: SearchTasksDocument,
+				variables,
+			})!;
+
+			cache.writeQuery({
+				query: SearchTasksDocument,
+				variables,
+				data: {
+					searchTasks: searchTasks.map(task => {
+						const updated = createTaskData && createTaskData.updateTask;
+
+						if (updated && updated.id === task.id) {
+							return updated;
+						}
+
+						return task;
+					}),
+				},
+			});
+		},
+	});
+
+	const [deleteTask, { loading: deleteInProgress }] = useDeleteTaskMutation({
+		update: (cache, { data: createTaskData }) => {
+			const variables = {
+				sortBy: tasksSortOrder,
+			};
+
+			const { searchTasks } = cache.readQuery<SearchTasksQuery>({
+				query: SearchTasksDocument,
+				variables,
+			})!;
+
+			const deletedTaskId = createTaskData && createTaskData.deleteTask;
+
+			cache.writeQuery({
+				query: SearchTasksDocument,
+				variables,
+				data: {
+					searchTasks: searchTasks.filter(task => task.id !== deletedTaskId),
+				},
+			});
+		},
+	});
 
 	const mouseEnterHandler = () => {
 		setIsHovered(true);
@@ -45,10 +101,10 @@ const Task: React.FC<TaskProps> = React.memo(props => {
 		setIsHovered(false);
 	};
 
-	const editHandler = () => {
+	const editHandler = useCallback(() => {
 		setIsEditable(!isEditable);
 		mouseLeaveHandler();
-	};
+	}, [isEditable]);
 
 	const completeHandler = useCallback(() => {
 		updateTask({ variables: { ...task, completed: !task.completed } });
