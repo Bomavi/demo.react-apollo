@@ -2,13 +2,15 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 
 /* root imports: graphql */
-import { useSearchTasksLazyQuery } from 'generated/graphql';
+import { useSearchTasksQuery } from 'generated/graphql';
 
 /* root imports: view components */
 import { CustomInput } from 'views/elements';
 
 /* root imports: common */
 import { debounce, debounceTiming } from 'utils/helpers';
+import { useStore } from 'context';
+import { setTasksSearchKey } from 'context/store/actions';
 
 /* local imports: common */
 // import { useStyles } from './styles';
@@ -16,10 +18,17 @@ import { debounce, debounceTiming } from 'utils/helpers';
 const Search: React.FC = () => {
 	// const classes = useStyles();
 
+	const [{ tasksSortOrder, tasksSearchKey }, dispatch] = useStore();
+
 	const isInitialized = useRef(false);
 	const prevSearch = useRef('');
 
-	const [searchTasks, { loading }] = useSearchTasksLazyQuery();
+	const { loading } = useSearchTasksQuery({
+		variables: {
+			q: tasksSearchKey,
+			sortBy: tasksSortOrder,
+		},
+	});
 
 	const changeHandler = useCallback(
 		debounce((value: string) => {
@@ -35,9 +44,9 @@ const Search: React.FC = () => {
 
 	const searchHandler = useCallback(
 		q => {
-			searchTasks({ variables: { q } });
+			dispatch(setTasksSearchKey(q));
 		},
-		[searchTasks]
+		[dispatch]
 	);
 
 	useEffect(() => {
