@@ -1,9 +1,15 @@
 /* npm imports: common */
 import React, { useState, useMemo, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 
 /* npm imports: material-ui/core */
 import Paper from '@material-ui/core/Paper';
+
+/* root imports: graphql */
+import {
+	useLoginMutation,
+	useRegisterMutation,
+	CurrentUserDocument,
+} from 'generated/graphql';
 
 /* root imports: common */
 import {
@@ -12,19 +18,35 @@ import {
 	LoginTabs,
 	LoginButton,
 } from 'features/Login/components';
-import { login, register } from 'actions/auth';
 
 /* local imports: common */
 import { useStyles } from './styles';
 
-const LoginForm = React.memo(() => {
+const LoginForm: React.FC = React.memo(() => {
 	const classes = useStyles();
-	const dispatch = useDispatch();
 
 	const [tabIndex, setTabIndex] = useState(0);
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [repeatPassword, setRepeatPassword] = useState('');
+
+	const [login] = useLoginMutation({
+		update: (cache, { data: loginData }) => {
+			cache.writeQuery({
+				query: CurrentUserDocument,
+				data: { currentUser: loginData && loginData.login },
+			});
+		},
+	});
+
+	const [register] = useRegisterMutation({
+		update: (cache, { data: registerData }) => {
+			cache.writeQuery({
+				query: CurrentUserDocument,
+				data: { currentUser: registerData && registerData.register },
+			});
+		},
+	});
 
 	const isPasswordCorrect = useMemo(() => password === repeatPassword, [
 		password,
@@ -38,7 +60,7 @@ const LoginForm = React.memo(() => {
 		isPasswordCorrect,
 	]);
 
-	const tabClickHandler = useCallback((e, value) => {
+	const tabClickHandler = useCallback((_e: React.ChangeEvent<{}>, value: number) => {
 		setTabIndex(value);
 	}, []);
 
@@ -54,22 +76,22 @@ const LoginForm = React.memo(() => {
 		setRepeatPassword(target.value);
 	}, []);
 
-	const loginHandler = () => {
+	const loginHandler = (): void => {
 		const userData = {
 			username,
 			password,
 		};
 
-		if (isLoginReady) dispatch(login(userData));
+		if (isLoginReady) login({ variables: userData });
 	};
 
-	const registrationHandler = () => {
+	const registrationHandler = (): void => {
 		const userData = {
 			username,
 			password,
 		};
 
-		if (isRegistrationReady) dispatch(register(userData));
+		if (isRegistrationReady) register({ variables: userData });
 	};
 
 	return (
