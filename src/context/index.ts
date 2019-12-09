@@ -1,5 +1,5 @@
 import { useContext } from 'react';
 
-import { AppContext } from './app';
+import { StoreContext } from './store/index';
 
-export const useAppContext = () => useContext(AppContext);
+export const useStore = () => useContext(StoreContext);
