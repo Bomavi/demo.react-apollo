@@ -1,6 +1,5 @@
 /* npm imports: common */
 import React from 'react';
-import PropTypes from 'prop-types';
 
 /* npm imports: material-ui/core */
 import Tabs from '@material-ui/core/Tabs';
@@ -9,7 +8,14 @@ import Tab from '@material-ui/core/Tab';
 /* local imports: common */
 // import { useStyles } from './styles';
 
-const LoginTabs = React.memo(({ tabIndex, onChange }) => {
+export interface LoginTabsProps {
+	tabIndex: number;
+	onChange: (e: React.ChangeEvent<{}>, v: number) => void;
+}
+
+const LoginTabs: React.FC<LoginTabsProps> = React.memo(props => {
+	const { tabIndex, onChange } = props;
+
 	// const classes = useStyles();
 
 	return (
@@ -24,10 +30,5 @@ const LoginTabs = React.memo(({ tabIndex, onChange }) => {
 		</Tabs>
 	);
 });
-
-LoginTabs.propTypes = {
-	tabIndex: PropTypes.number.isRequired,
-	onChange: PropTypes.func.isRequired,
-};
 
 export { LoginTabs };
