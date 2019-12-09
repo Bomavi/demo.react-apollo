@@ -95,7 +95,8 @@ export type QueryFindTaskByIdArgs = {
 
 
 export type QuerySearchTasksArgs = {
-  q?: Maybe<Scalars['String']>
+  q?: Maybe<Scalars['String']>,
+  sortBy?: Maybe<SortDirection>
 };
 
 
@@ -105,8 +106,15 @@ export type QueryFindUserByIdArgs = {
 
 
 export type QuerySearchUsersArgs = {
-  q?: Maybe<Scalars['String']>
+  q?: Maybe<Scalars['String']>,
+  sortBy?: Maybe<SortDirection>
 };
+
+/** Available sort directions */
+export enum SortDirection {
+  Asc = 'asc',
+  Desc = 'desc'
+}
 
 export type Task = {
    __typename?: 'Task',
@@ -233,7 +241,8 @@ export type FindTaskByIdQuery = (
 );
 
 export type SearchTasksQueryVariables = {
-  q?: Maybe<Scalars['String']>
+  q?: Maybe<Scalars['String']>,
+  sortBy?: Maybe<SortDirection>
 };
 
 
@@ -311,7 +320,8 @@ export type FindUserByIdQuery = (
 );
 
 export type SearchUsersQueryVariables = {
-  q?: Maybe<Scalars['String']>
+  q?: Maybe<Scalars['String']>,
+  sortBy?: Maybe<SortDirection>
 };
 
 
@@ -461,8 +471,8 @@ export type FindTaskByIdQueryHookResult = ReturnType<typeof useFindTaskByIdQuery
 export type FindTaskByIdLazyQueryHookResult = ReturnType<typeof useFindTaskByIdLazyQuery>;
 export type FindTaskByIdQueryResult = ApolloReactCommon.QueryResult<FindTaskByIdQuery, FindTaskByIdQueryVariables>;
 export const SearchTasksDocument = gql`
-    query SearchTasks($q: String) {
-  searchTasks(q: $q) {
+    query SearchTasks($q: String, $sortBy: SortDirection) {
+  searchTasks(q: $q, sortBy: $sortBy) {
     id
     description
     completed
@@ -569,8 +579,8 @@ export type FindUserByIdQueryHookResult = ReturnType<typeof useFindUserByIdQuery
 export type FindUserByIdLazyQueryHookResult = ReturnType<typeof useFindUserByIdLazyQuery>;
 export type FindUserByIdQueryResult = ApolloReactCommon.QueryResult<FindUserByIdQuery, FindUserByIdQueryVariables>;
 export const SearchUsersDocument = gql`
-    query SearchUsers($q: String) {
-  searchUsers(q: $q) {
+    query SearchUsers($q: String, $sortBy: SortDirection) {
+  searchUsers(q: $q, sortBy: $sortBy) {
     id
     username
     theme
