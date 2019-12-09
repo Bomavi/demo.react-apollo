@@ -1,6 +1,5 @@
 /* npm imports: common */
 import React, { useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 
 /* npm imports: material-ui/core */
 import AppBar from '@material-ui/core/AppBar';
@@ -8,20 +7,25 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 
+/* root imports: graphql */
+import { useCurrentUserQuery } from 'generated/graphql';
+
 /* root imports: view components */
 import { Icon } from 'views/elements';
 
 /* root imports: common */
-import { toggleDrawer } from 'actions/ui';
+import { useStore } from 'context';
+import { toggleDrawer } from 'context/store/actions';
 
 /* local imports: common */
 import { useStyles } from './styles';
 
-const Header = () => {
+const Header = React.memo(() => {
 	const classes = useStyles();
-	const dispatch = useDispatch();
+	const [, dispatch] = useStore();
 
-	const user = useSelector(state => state.auth.user);
+	const { data: currentUserData } = useCurrentUserQuery();
+	const currentUser = currentUserData ? currentUserData.currentUser : undefined;
 
 	const toggleDrawerHandler = useCallback(() => dispatch(toggleDrawer()), [dispatch]);
 
@@ -31,12 +35,12 @@ const Header = () => {
 				<Typography variant="h6" noWrap className={classes.title}>
 					TODO'SHER
 				</Typography>
-				{user && (
+				{currentUser && (
 					<Typography variant="subtitle2" noWrap className={classes.hello}>
-						Hello, {user.username}
+						Hello, {currentUser.username}
 					</Typography>
 				)}
-				{user && (
+				{currentUser && (
 					<IconButton color="inherit" onClick={toggleDrawerHandler}>
 						<Icon
 							name="account-circle"
@@ -49,6 +53,6 @@ const Header = () => {
 			</Toolbar>
 		</AppBar>
 	);
-};
+});
 
 export { Header };
