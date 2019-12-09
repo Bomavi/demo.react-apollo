@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 /* local imports: common */
 import { useStyles } from './styles';
 
-const Subtitle = ({ children }) => {
+const Subtitle: React.FC = ({ children }) => {
 	const classes = useStyles();
 
 	return (
