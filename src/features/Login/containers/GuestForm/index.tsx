@@ -1,24 +1,32 @@
 /* npm imports: common */
 import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 
 /* npm imports: material-ui/core */
 import Paper from '@material-ui/core/Paper';
 
+/* root imports: graphql */
+import { useLoginMutation, CurrentUserDocument } from 'generated/graphql';
+
 /* root imports: common */
 import { Subtitle, LoginButton } from 'features/Login/components';
-import { login } from 'actions/auth';
 
 /* local imports: common */
 import { useStyles } from './styles';
 
-const GuestForm = React.memo(() => {
+const GuestForm: React.FC = React.memo(() => {
 	const classes = useStyles();
-	const dispatch = useDispatch();
+	const [login] = useLoginMutation({
+		update: (cache, { data: loginData }) => {
+			cache.writeQuery({
+				query: CurrentUserDocument,
+				data: { currentUser: loginData && loginData.login },
+			});
+		},
+	});
 
 	const loginHandler = useCallback(() => {
-		dispatch(login({ isGuest: true }));
-	}, [dispatch]);
+		login({ variables: { isGuest: true } });
+	}, [login]);
 
 	return (
 		<Paper className={classes.paper}>
