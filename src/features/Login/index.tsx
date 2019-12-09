@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import { GuestForm, LoginForm } from './containers';
 import { useStyles } from './styles';
 
-const Login = () => {
+const Login: React.FC = () => {
 	const classes = useStyles();
 
 	return (
