@@ -14,29 +14,37 @@ import { Task } from 'features/Home/containers';
 import { SortButton } from 'features/Home/components';
 
 /* root imports: common */
-import { useAppContext } from 'context';
+import { useStore } from 'context';
+import { toggleTasksSortOrder } from 'context/store/actions';
 
 /* local imports: common */
 import { useStyles } from './styles';
 
-const TaskList: React.FC = () => {
+const TaskList: React.FC = React.memo(() => {
 	const classes = useStyles();
 
-	const [{ tasksSortOrder }, setContext] = useAppContext();
+	const [{ tasksSortOrder, tasksSearchKey }, dispatch] = useStore();
 
-	const { data: searchTasksData } = useSearchTasksQuery();
-	const { searchTasks: tasks } = searchTasksData!;
+	const { data: searchTasksData } = useSearchTasksQuery({
+		variables: {
+			q: tasksSearchKey,
+			sortBy: tasksSortOrder,
+		},
+	});
+
+	const sortTasksHandler = useCallback(() => {
+		dispatch(toggleTasksSortOrder());
+	}, [dispatch]);
+
+	const tasks = searchTasksData ? searchTasksData.searchTasks : [];
+
+	const uncompleteTaskFirst = React.useMemo(
+		() => tasks.sort((a, b) => Number(a.completed) - Number(b.completed)),
+		[tasks]
+	);
 
 	const tasksLength = tasks.length;
 	const isEmpty = tasksLength === 0;
-
-	const sortTasksHandler = useCallback(() => {
-		if (tasksSortOrder === 'asc') {
-			setContext(ctx => ({ ...ctx, tasksSortOrder: 'desc' }));
-		} else if (tasksSortOrder === 'desc') {
-			setContext(ctx => ({ ...ctx, tasksSortOrder: 'asc' }));
-		}
-	}, [tasksSortOrder, setContext]);
 
 	return (
 		<Paper className={classes.root}>
@@ -54,7 +62,7 @@ const TaskList: React.FC = () => {
 				/>
 			</div>
 			{!isEmpty
-				? tasks.map((task, i) => (
+				? uncompleteTaskFirst.map((task, i) => (
 						<motion.div key={task.id} positionTransition>
 							<Task task={task} isLastChild={tasksLength === i + 1} />
 						</motion.div>
@@ -62,6 +70,6 @@ const TaskList: React.FC = () => {
 				: 'no tasks'}
 		</Paper>
 	);
-};
+});
 
 export { TaskList };
