@@ -1,5 +1,6 @@
 /* npm imports: common */
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 import { Router, Switch, Route, Redirect } from 'react-router';
 
 /* root imports: graphql */
@@ -13,9 +14,9 @@ import { Home } from 'features/Home';
 import { history } from 'config/history';
 import { useStore } from 'context';
 
-const Routes: React.FC = () => {
+const Routes: React.FC = observer(() => {
 	const { pathname } = history.location;
-	const [{ isAppInitialized }] = useStore();
+	const { isInitialized } = useStore();
 
 	const {
 		data: currentUserData,
@@ -28,15 +29,15 @@ const Routes: React.FC = () => {
 
 	const isAuthenticated = !!user;
 
-	const accessibleForUnauthorized = isAppInitialized && !isAuthenticated;
+	const accessibleForUnauthorized = isInitialized && !isAuthenticated;
 
-	const accessibleForAuthorized = isAppInitialized && isAuthenticated;
+	const accessibleForAuthorized = isInitialized && isAuthenticated;
 
 	const notAccessibleForUnauthorized =
-		isAppInitialized && !isAuthenticated && pathname !== '/login';
+		isInitialized && !isAuthenticated && pathname !== '/login';
 
 	const notAccessibleForAuthorized =
-		isAppInitialized && isAuthenticated && pathname === '/login';
+		isInitialized && isAuthenticated && pathname === '/login';
 
 	return (
 		<Router history={history}>
@@ -50,6 +51,6 @@ const Routes: React.FC = () => {
 			</Switch>
 		</Router>
 	);
-};
+});
 
 export { Routes };
