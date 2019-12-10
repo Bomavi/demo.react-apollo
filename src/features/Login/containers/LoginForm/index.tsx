@@ -22,7 +22,7 @@ import {
 /* local imports: common */
 import { useStyles } from './styles';
 
-const LoginForm: React.FC = React.memo(() => {
+const LoginForm: React.FC = () => {
 	const classes = useStyles();
 
 	const [tabIndex, setTabIndex] = useState(0);
@@ -128,6 +128,6 @@ const LoginForm: React.FC = React.memo(() => {
 			</div>
 		</Paper>
 	);
-});
+};
 
 export { LoginForm };

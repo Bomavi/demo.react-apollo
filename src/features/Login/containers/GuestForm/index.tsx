@@ -13,8 +13,9 @@ import { Subtitle, LoginButton } from 'features/Login/components';
 /* local imports: common */
 import { useStyles } from './styles';
 
-const GuestForm: React.FC = React.memo(() => {
+const GuestForm: React.FC = () => {
 	const classes = useStyles();
+
 	const [login] = useLoginMutation({
 		update: (cache, { data: loginData }) => {
 			cache.writeQuery({
@@ -38,6 +39,6 @@ const GuestForm: React.FC = React.memo(() => {
 			</div>
 		</Paper>
 	);
-});
+};
 
 export { GuestForm };
