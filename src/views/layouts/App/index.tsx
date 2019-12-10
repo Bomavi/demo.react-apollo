@@ -1,5 +1,6 @@
 /* npm imports: common */
 import React, { useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
 
 /* npm imports: material-ui/core */
 import { ThemeProvider } from '@material-ui/styles';
@@ -14,7 +15,6 @@ import { Content } from 'views/layouts';
 /* root imports: common */
 import { Routes } from 'routes';
 import { useStore } from 'context';
-import { setInitialize } from 'context/store/actions';
 import { lightTheme, darkTheme } from 'utils/themes';
 
 /* local imports: common */
@@ -33,17 +33,16 @@ export const getSelectedTheme = (theme: Theme) => {
 	}
 };
 
-const App: React.FC = React.memo(() => {
+const App: React.FC = observer(() => {
 	const classes = useStyles();
-
-	const [, dispatch] = useStore();
+	const store = useStore();
 
 	const { data: currentUserData } = useCurrentUserQuery();
 	const currentUser = currentUserData ? currentUserData.currentUser : undefined;
 
 	useEffect(() => {
-		dispatch(setInitialize());
-	}, [dispatch]);
+		store.setInitialize();
+	}, [store]);
 
 	const theme = currentUser ? currentUser.theme : Theme.Light;
 

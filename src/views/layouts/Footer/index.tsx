@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 /* local imports: common */
 import { useStyles } from './styles';
 
-const Footer: React.FC = React.memo(() => {
+const Footer: React.FC = () => {
 	const classes = useStyles();
 
 	return (
@@ -17,6 +17,6 @@ const Footer: React.FC = React.memo(() => {
 			</Typography>
 		</footer>
 	);
-});
+};
 
 export { Footer };

@@ -1,5 +1,6 @@
 /* npm imports: common */
 import React, { useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
 
 /* npm imports: material-ui/core */
 import MUIDrawer from '@material-ui/core/Drawer';
@@ -8,26 +9,24 @@ import Divider from '@material-ui/core/Divider';
 
 /* root imports: common */
 import { useStore } from 'context';
-import { toggleDrawer } from 'context/store/actions';
 
 /* local imports: common */
 import { useStyles } from './styles';
 import { SwitchTheme } from './SwitchTheme';
 import { Logout } from './Logout';
 
-const Drawer: React.FC = () => {
+const Drawer: React.FC = observer(() => {
 	const classes = useStyles();
-
-	const [{ isDrawerOpen }, dispatch] = useStore();
+	const store = useStore();
 
 	useEffect(() => {
 		return () => {
-			dispatch(toggleDrawer(false));
+			store.toggleDrawer(false);
 		};
-	}, [dispatch]);
+	}, [store]);
 
 	return (
-		<MUIDrawer anchor="right" variant="persistent" open={isDrawerOpen}>
+		<MUIDrawer anchor="right" variant="persistent" open={store.isDrawerOpen}>
 			<div className={classes.toolbar} />
 			<List>
 				<SwitchTheme />
@@ -38,6 +37,6 @@ const Drawer: React.FC = () => {
 			</List>
 		</MUIDrawer>
 	);
-};
+});
 
 export { Drawer };

@@ -1,5 +1,6 @@
 /* npm imports: common */
 import React, { useCallback } from 'react';
+import { observer } from 'mobx-react-lite';
 
 /* npm imports: material-ui/core */
 import AppBar from '@material-ui/core/AppBar';
@@ -15,19 +16,18 @@ import { Icon } from 'views/elements';
 
 /* root imports: common */
 import { useStore } from 'context';
-import { toggleDrawer } from 'context/store/actions';
 
 /* local imports: common */
 import { useStyles } from './styles';
 
-const Header = React.memo(() => {
+const Header: React.FC = observer(() => {
 	const classes = useStyles();
-	const [, dispatch] = useStore();
+	const store = useStore();
 
 	const { data: currentUserData } = useCurrentUserQuery();
 	const currentUser = currentUserData ? currentUserData.currentUser : undefined;
 
-	const toggleDrawerHandler = useCallback(() => dispatch(toggleDrawer()), [dispatch]);
+	const toggleDrawerHandler = useCallback(() => store.toggleDrawer(), [store]);
 
 	return (
 		<AppBar position="fixed" className={classes.appBar}>
