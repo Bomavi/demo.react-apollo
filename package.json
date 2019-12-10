@@ -21,6 +21,8 @@
     "date-fns": "^2.8.1",
     "framer-motion": "^1.6.17",
     "history": "^4.10.1",
+    "mobx": "^5.15.0",
+    "mobx-react-lite": "^1.5.1",
     "prop-types": "^15.7.2",
     "query-string": "^6.9.0",
     "react": "^16.12.0",
