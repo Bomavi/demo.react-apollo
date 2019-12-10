@@ -35,8 +35,7 @@ const Task: React.FC<TaskProps> = React.memo(props => {
 	const { task, isLastChild = false } = props;
 
 	const classes = useStyles();
-
-	const [{ tasksSortOrder }] = useStore();
+	const store = useStore();
 
 	const [isHovered, setIsHovered] = useState(false);
 	const [isEditable, setIsEditable] = useState(false);
@@ -44,19 +43,22 @@ const Task: React.FC<TaskProps> = React.memo(props => {
 	const [updateTask, { loading: updateInProgress }] = useUpdateTaskMutation({
 		update: (cache, { data: createTaskData }) => {
 			const variables = {
-				sortBy: tasksSortOrder,
+				q: store.tasksSearchKey,
+				sortBy: store.tasksSortOrder,
 			};
 
-			const { searchTasks } = cache.readQuery<SearchTasksQuery>({
+			const query = cache.readQuery<SearchTasksQuery>({
 				query: SearchTasksDocument,
 				variables,
-			})!;
+			});
+
+			const tasks = query ? query.searchTasks : [];
 
 			cache.writeQuery({
 				query: SearchTasksDocument,
 				variables,
 				data: {
-					searchTasks: searchTasks.map(task => {
+					searchTasks: tasks.map(task => {
 						const updated = createTaskData && createTaskData.updateTask;
 
 						if (updated && updated.id === task.id) {
@@ -71,23 +73,28 @@ const Task: React.FC<TaskProps> = React.memo(props => {
 	});
 
 	const [deleteTask, { loading: deleteInProgress }] = useDeleteTaskMutation({
-		update: (cache, { data: createTaskData }) => {
+		update: (cache, { data: deleteTaskData }) => {
+			if (!deleteTaskData || !deleteTaskData.deleteTask) return;
+
 			const variables = {
-				sortBy: tasksSortOrder,
+				q: store.tasksSearchKey,
+				sortBy: store.tasksSortOrder,
 			};
 
-			const { searchTasks } = cache.readQuery<SearchTasksQuery>({
+			const query = cache.readQuery<SearchTasksQuery>({
 				query: SearchTasksDocument,
 				variables,
-			})!;
+			});
 
-			const deletedTaskId = createTaskData && createTaskData.deleteTask;
+			const tasks = query ? query.searchTasks : [];
+
+			const deletedTaskId = deleteTaskData.deleteTask;
 
 			cache.writeQuery({
 				query: SearchTasksDocument,
 				variables,
 				data: {
-					searchTasks: searchTasks.filter(task => task.id !== deletedTaskId),
+					searchTasks: tasks.filter(task => task.id !== deletedTaskId),
 				},
 			});
 		},

@@ -1,5 +1,6 @@
 /* npm imports: common */
 import React, { useCallback } from 'react';
+import { observer } from 'mobx-react-lite';
 
 /* root imports: graphql */
 import {
@@ -18,26 +19,30 @@ import { useStore } from 'context';
 /* local imports: common */
 // import { useStyles } from './styles';
 
-const AddTask: React.FC = () => {
+const AddTask: React.FC = observer(() => {
 	// const classes = useStyles();
-
-	const [{ tasksSortOrder }] = useStore();
+	const store = useStore();
 
 	const [createTask, { loading }] = useCreateTaskMutation({
 		update: (cache, { data: createTaskData }) => {
+			if (!createTaskData || !createTaskData.createTask) return;
+
 			const variables = {
-				sortBy: tasksSortOrder,
+				q: store.tasksSearchKey,
+				sortBy: store.tasksSortOrder,
 			};
 
-			const { searchTasks } = cache.readQuery<SearchTasksQuery>({
+			const query = cache.readQuery<SearchTasksQuery>({
 				query: SearchTasksDocument,
 				variables,
-			})!;
+			});
+
+			const tasks = query ? query.searchTasks : [];
 
 			const updatedTasks =
-				tasksSortOrder === SortDirection.Asc
-					? [createTaskData && createTaskData.createTask, ...searchTasks]
-					: [...searchTasks, createTaskData && createTaskData.createTask];
+				store.tasksSortOrder === SortDirection.Desc
+					? [createTaskData.createTask, ...tasks]
+					: [...tasks, createTaskData.createTask];
 
 			cache.writeQuery({
 				query: SearchTasksDocument,
@@ -70,6 +75,6 @@ const AddTask: React.FC = () => {
 			onClick={actionHandler}
 		/>
 	);
-};
+});
 
 export { AddTask };

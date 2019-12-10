@@ -1,5 +1,6 @@
 /* npm imports: common */
 import React, { useCallback, useEffect, useRef } from 'react';
+import { observer } from 'mobx-react-lite';
 
 /* root imports: graphql */
 import { useSearchTasksQuery } from 'generated/graphql';
@@ -10,23 +11,21 @@ import { CustomInput } from 'views/elements';
 /* root imports: common */
 import { debounce, debounceTiming } from 'utils/helpers';
 import { useStore } from 'context';
-import { setTasksSearchKey } from 'context/store/actions';
 
 /* local imports: common */
 // import { useStyles } from './styles';
 
-const Search: React.FC = () => {
+const Search: React.FC = observer(() => {
 	// const classes = useStyles();
-
-	const [{ tasksSortOrder, tasksSearchKey }, dispatch] = useStore();
+	const store = useStore();
 
 	const isInitialized = useRef(false);
 	const prevSearch = useRef('');
 
 	const { loading } = useSearchTasksQuery({
 		variables: {
-			q: tasksSearchKey,
-			sortBy: tasksSortOrder,
+			q: store.tasksSearchKey,
+			sortBy: store.tasksSortOrder,
 		},
 	});
 
@@ -44,9 +43,9 @@ const Search: React.FC = () => {
 
 	const searchHandler = useCallback(
 		q => {
-			dispatch(setTasksSearchKey(q));
+			store.setTasksSearchKey(q);
 		},
-		[dispatch]
+		[store]
 	);
 
 	useEffect(() => {
@@ -66,6 +65,6 @@ const Search: React.FC = () => {
 			onChange={changeHandler}
 		/>
 	);
-};
+});
 
 export { Search };

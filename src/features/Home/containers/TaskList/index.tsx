@@ -1,5 +1,6 @@
 /* npm imports: common */
-import React, { useCallback } from 'react';
+import React from 'react';
+import { observer } from 'mobx-react-lite';
 import { motion } from 'framer-motion';
 
 /* npm imports: material-ui/core */
@@ -15,30 +16,31 @@ import { SortButton } from 'features/Home/components';
 
 /* root imports: common */
 import { useStore } from 'context';
-import { toggleTasksSortOrder } from 'context/store/actions';
 
 /* local imports: common */
 import { useStyles } from './styles';
 
-const TaskList: React.FC = React.memo(() => {
-	const classes = useStyles();
+const spring = {
+	type: 'spring',
+	damping: 50,
+	stiffness: 500,
+};
 
-	const [{ tasksSortOrder, tasksSearchKey }, dispatch] = useStore();
+const TaskList: React.FC = observer(() => {
+	const classes = useStyles();
+	const store = useStore();
 
 	const { data: searchTasksData } = useSearchTasksQuery({
+		fetchPolicy: 'cache-and-network',
 		variables: {
-			q: tasksSearchKey,
-			sortBy: tasksSortOrder,
+			q: store.tasksSearchKey,
+			sortBy: store.tasksSortOrder,
 		},
 	});
 
-	const sortTasksHandler = useCallback(() => {
-		dispatch(toggleTasksSortOrder());
-	}, [dispatch]);
-
 	const tasks = searchTasksData ? searchTasksData.searchTasks : [];
 
-	const uncompleteTaskFirst = React.useMemo(
+	const uncompletedTaskFirst = React.useMemo(
 		() => tasks.sort((a, b) => Number(a.completed) - Number(b.completed)),
 		[tasks]
 	);
@@ -56,14 +58,14 @@ const TaskList: React.FC = React.memo(() => {
 					{!isEmpty && `${tasksLength}`}
 				</Typography>
 				<SortButton
-					sortKey={tasksSortOrder}
+					sortKey={store.tasksSortOrder}
 					disabled={isEmpty}
-					onClick={sortTasksHandler}
+					onClick={store.toggleTasksSortOrder}
 				/>
 			</div>
 			{!isEmpty
-				? uncompleteTaskFirst.map((task, i) => (
-						<motion.div key={task.id} positionTransition>
+				? uncompletedTaskFirst.map((task, i) => (
+						<motion.div key={task.id} positionTransition={spring}>
 							<Task task={task} isLastChild={tasksLength === i + 1} />
 						</motion.div>
 				  ))
