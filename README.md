@@ -5,10 +5,11 @@ Application was built in demo purpose
 ## Technology stack
 
 * [React](https://reactjs.org/)
+* [MobX](https://mobx.js.org/)
 * [React Router](https://github.com/ReactTraining/react-router)
-* [Redux](https://redux.js.org/)
-* [Redux Thunk](https://github.com/reduxjs/redux-thunk)
-* [Prop Types](https://reactjs.org/docs/typechecking-with-proptypes.html)
+* [GraphQL](https://graphql.org/)
+* [Apollo](https://www.apollographql.com/docs/react/)
+* [TypeScript](https://www.typescriptlang.org/)
 * [Material UI](https://material-ui.com/)
 * [ESLint](https://eslint.org/)
 * [Prettier](https://prettier.io/)
