@@ -8,14 +8,14 @@ import { App } from 'views/layouts/App';
 
 /* root imports: common */
 import { client } from 'config/apollo';
-import { StoreContextProvider } from 'context/store';
+import { StoreProvider } from 'context';
 
 /* start react app */
 render(
 	<ApolloProvider client={client}>
-		<StoreContextProvider>
+		<StoreProvider>
 			<App />
-		</StoreContextProvider>
+		</StoreProvider>
 	</ApolloProvider>,
 	document.getElementById('root')
 );
